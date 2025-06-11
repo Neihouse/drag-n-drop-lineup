@@ -7,6 +7,7 @@ import { useLineup } from '@/app/providers/LineupStore';
 import type { LineupSlot, Artist, Event } from '@/app/providers/LineupStore';
 import { Draggable, Droppable } from '@/components/DragDrop';
 import { generateLineupCSV, generateLineupICS, downloadCSV, downloadICS, generateArtistEmail } from '@/lib/exportUtils';
+import { CURRENT_ROLE } from '@/seed/internalSeed';
 import Link from 'next/link';
 
 export default function Client() {
@@ -170,31 +171,33 @@ export default function Client() {
           
           <div className="flex items-center gap-4">
             {/* Lock/Unlock Toggle - Promoter Only */}
-            <button
-              onClick={handleToggleLock}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                currentEvent.locked 
-                  ? 'bg-red-600 hover:bg-red-500 text-white' 
-                  : 'bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary'
-              }`}
-              title={currentEvent.locked ? 'Unlock lineup' : 'Lock lineup'}
-            >
-              {currentEvent.locked ? (
-                <>
-                  <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  Unlock
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                  </svg>
-                  Lock
-                </>
-              )}
-            </button>
+            {CURRENT_ROLE === 'promoter' && (
+              <button
+                onClick={handleToggleLock}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  currentEvent.locked 
+                    ? 'bg-red-600 hover:bg-red-500 text-white' 
+                    : 'bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary'
+                }`}
+                title={currentEvent.locked ? 'Unlock lineup' : 'Lock lineup'}
+              >
+                {currentEvent.locked ? (
+                  <>
+                    <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Unlock
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                    </svg>
+                    Lock
+                  </>
+                )}
+              </button>
+            )}
             
             {/* Status Indicators */}
             <div className="flex items-center gap-2 text-sm">
@@ -387,8 +390,22 @@ export default function Client() {
                     Email Artists
                   </button>
                 </div>
-                <div className="text-sm text-gray-400">
-                  {eventSlots.length} slots scheduled
+                <div className="flex items-center gap-4 text-sm text-gray-400">
+                  <span>{eventSlots.length} slots scheduled</span>
+                  
+                  {/* Dev-only reset button */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <button
+                      onClick={() => {
+                        localStorage.clear();
+                        window.location.reload();
+                      }}
+                      className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
+                      title="Clear all data and reset to seed state"
+                    >
+                      Reset Demo Data
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

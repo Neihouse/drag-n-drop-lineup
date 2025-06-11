@@ -3,17 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useLineup } from '@/app/providers/LineupStore';
 import type { LineupSlot, Artist, Event } from '@/app/providers/LineupStore';
+import { CURRENT_ARTIST_ID } from '@/seed/internalSeed';
 import Link from 'next/link';
-
-// Mock artist data - in real app this would come from auth/user context
-const CURRENT_ARTIST: Artist = {
-  id: 'dj-nova',
-  name: 'DJ Nova',
-  genre: 'House',
-  avatarColor: 'bg-avatar-amber',
-  email: 'nova@primordialgroove.com',
-  bio: 'House music specialist with 10+ years experience'
-};
 
 interface SlotCardProps {
   slot: LineupSlot;
@@ -265,8 +256,22 @@ export default function ArtistDashboard() {
   const [animatingSlot, setAnimatingSlot] = useState<string | null>(null);
   const [showAutosave, setShowAutosave] = useState(false);
 
+  // Get current artist from state using CURRENT_ARTIST_ID
+  const currentArtist = state.artists.find(a => a.id === CURRENT_ARTIST_ID);
+  
+  if (!currentArtist) {
+    return (
+      <div className="min-h-screen bg-primordial-background-primary flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-2">Artist Not Found</h1>
+          <p className="text-gray-400">Unable to load artist profile.</p>
+        </div>
+      </div>
+    );
+  }
+
   // Get slots for current artist
-  const artistSlots = state.slots.filter(slot => slot.artistId === CURRENT_ARTIST.id);
+  const artistSlots = state.slots.filter(slot => slot.artistId === currentArtist.id);
 
   const handleStatusChange = (slotId: string, status: 'accepted' | 'declined') => {
     // Show tick animation
@@ -308,12 +313,12 @@ export default function ArtistDashboard() {
             
             {/* Avatar and Name */}
             <div className="flex items-center gap-4">
-              <div className={`w-15 h-15 ${CURRENT_ARTIST.avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-lg`}>
-                {CURRENT_ARTIST.name.split(' ').map(n => n[0]).join('')}
+              <div className={`w-15 h-15 ${currentArtist.avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-lg`}>
+                {currentArtist.name.split(' ').map((n: string) => n[0]).join('')}
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-white font-heading">{CURRENT_ARTIST.name}</h1>
-                <p className="text-gray-400 text-sm">{CURRENT_ARTIST.genre} Artist</p>
+                <h1 className="text-xl font-semibold text-white font-heading">{currentArtist.name}</h1>
+                <p className="text-gray-400 text-sm">{currentArtist.genre} Artist</p>
               </div>
               {/* Tier Badge */}
               <div className="px-3 py-1 bg-primordial-accent-primary text-primordial-background-primary rounded-full text-xs font-bold">
@@ -350,7 +355,7 @@ export default function ArtistDashboard() {
                   key={slot.id}
                   slot={slot}
                   event={event}
-                  artist={CURRENT_ARTIST}
+                  artist={currentArtist}
                   onStatusChange={handleStatusChange}
                   showAnimation={animatingSlot === slot.id}
                 />
