@@ -176,7 +176,7 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-white mb-2">For Artists</h3>
                   <p className="text-gray-400 text-sm mb-4">View your slots, accept or decline bookings.</p>
                   <Link
-                    href="/artist/dashboard"
+                    href="/artist"
                     className="text-purple-400 hover:text-purple-300 text-sm font-medium"
                   >
                     Artist Dashboard →

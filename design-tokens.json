@@ -2,15 +2,16 @@
   "color": {
     "primordial": {
       "background": {
-        "primary": "#121417",
+        "primary": "#121212",
         "secondary": "#1a1a1a",
         "tertiary": "#2a2a2a",
         "quaternary": "#3a3a3a",
         "hover": "#4a4a4a"
       },
       "accent": {
-        "primary": "#dae4f5",
-        "hover": "#c1d3f0"
+        "primary": "#00FFCC",
+        "hover": "#00E6B8",
+        "muted": "#00CC99"
       },
       "border": {
         "primary": "#374151",
@@ -26,7 +27,14 @@
         "success": "#10b981",
         "warning": "#f59e0b",
         "error": "#ef4444",
-        "info": "#3b82f6"
+        "info": "#3b82f6",
+        "pending": "#6b7280",
+        "accepted": "#10b981",
+        "declined": "#ef4444"
+      },
+      "card": {
+        "background": "#F5F5F5",
+        "text": "#1f2937"
       }
     },
     "avatar": {
@@ -87,6 +95,7 @@
   },
   "fontFamily": {
     "sans": ["Space Grotesk", "Noto Sans", "system-ui", "sans-serif"],
+    "heading": ["Space Grotesk", "Orbitron", "system-ui", "sans-serif"],
     "mono": ["var(--font-geist-mono)", "monospace"]
   },
   "fontWeight": {
@@ -100,7 +109,7 @@
     "sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     "DEFAULT": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
     "md": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-    "lg": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    "lg": "0 6px 12px 0 rgb(0 0 0 / 0.25)",
     "xl": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
     "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
     "inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",

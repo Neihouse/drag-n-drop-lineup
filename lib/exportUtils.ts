@@ -95,6 +95,14 @@ function convertToDateTime(date: string, time: string): string {
   return eventDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 }
 
+// Helper function to slugify filenames
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 // Download helper functions
 export function downloadCSV(content: string, filename: string): void {
   const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
@@ -102,7 +110,7 @@ export function downloadCSV(content: string, filename: string): void {
   const url = URL.createObjectURL(blob);
   
   link.setAttribute('href', url);
-  link.setAttribute('download', filename);
+  link.setAttribute('download', slugify(filename));
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);
@@ -116,7 +124,7 @@ export function downloadICS(content: string, filename: string): void {
   const url = URL.createObjectURL(blob);
   
   link.setAttribute('href', url);
-  link.setAttribute('download', filename);
+  link.setAttribute('download', slugify(filename));
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);

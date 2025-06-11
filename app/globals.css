@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #121417;
+  --background: #121212;
   --foreground: #ffffff;
 }
 
@@ -12,14 +12,15 @@
   --font-mono: var(--font-geist-mono);
   
   /* Primordial Groove Design Tokens */
-  --color-primordial-background-primary: #121417;
+  --color-primordial-background-primary: #121212;
   --color-primordial-background-secondary: #1a1a1a;
   --color-primordial-background-tertiary: #2a2a2a;
   --color-primordial-background-quaternary: #3a3a3a;
   --color-primordial-background-hover: #4a4a4a;
   
-  --color-primordial-accent-primary: #dae4f5;
-  --color-primordial-accent-hover: #c1d3f0;
+  --color-primordial-accent-primary: #00FFCC;
+  --color-primordial-accent-hover: #00E6B8;
+  --color-primordial-accent-muted: #00CC99;
   
   --color-primordial-border-primary: #374151;
   --color-primordial-border-secondary: #4b5563;
@@ -33,6 +34,12 @@
   --color-primordial-status-warning: #f59e0b;
   --color-primordial-status-error: #ef4444;
   --color-primordial-status-info: #3b82f6;
+  --color-primordial-status-pending: #6b7280;
+  --color-primordial-status-accepted: #10b981;
+  --color-primordial-status-declined: #ef4444;
+  
+  --color-primordial-card-background: #F5F5F5;
+  --color-primordial-card-text: #1f2937;
   
   /* Avatar Colors */
   --color-avatar-amber: #fbbf24;
@@ -46,6 +53,7 @@
   
   /* Typography */
   --font-family-primordial: "Space Grotesk", "Noto Sans", system-ui, sans-serif;
+  --font-family-heading: "Space Grotesk", "Orbitron", system-ui, sans-serif;
   
   /* Spacing tokens are already available via Tailwind defaults */
   /* Border radius tokens are already available via Tailwind defaults */
@@ -54,7 +62,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #121417;
+    --background: #121212;
     --foreground: #ffffff;
   }
 }

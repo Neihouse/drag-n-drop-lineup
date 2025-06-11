@@ -67,12 +67,77 @@ const DUMMY_ARTISTS: Artist[] = [
   { id: 'dj-storm', name: 'DJ Storm', genre: 'Hardcore', avatarColor: 'bg-avatar-red', email: 'storm@primordialgroove.com' },
 ];
 
+// Dummy events and slots for demo
+const DUMMY_EVENTS: Event[] = [
+  {
+    id: 'primordial-festival',
+    title: 'Primordial Festival',
+    date: '2024-07-15',
+    stages: ['Main', 'Patio'],
+    hours: { start: '18:00', end: '06:00' },
+    createdAt: '2024-06-01T10:00:00Z',
+    status: 'published'
+  },
+  {
+    id: 'underground-nights',
+    title: 'Underground Nights',
+    date: '2024-08-12',
+    stages: ['Main', 'Basement'],
+    hours: { start: '20:00', end: '04:00' },
+    createdAt: '2024-06-15T14:30:00Z',
+    status: 'draft'
+  }
+];
+
+const DUMMY_SLOTS: LineupSlot[] = [
+  {
+    id: 'slot-1',
+    eventId: 'primordial-festival',
+    artistId: 'dj-nova',
+    stage: 'Main',
+    startTime: '22:00',
+    endTime: '23:00',
+    status: 'pending',
+    createdAt: '2024-06-01T12:00:00Z'
+  },
+  {
+    id: 'slot-2',
+    eventId: 'underground-nights',
+    artistId: 'dj-nova',
+    stage: 'Main',
+    startTime: '01:00',
+    endTime: '02:30',
+    status: 'accepted',
+    createdAt: '2024-06-15T16:00:00Z'
+  },
+  {
+    id: 'slot-3',
+    eventId: 'primordial-festival',
+    artistId: 'dj-echo',
+    stage: 'Patio',
+    startTime: '20:00',
+    endTime: '21:30',
+    status: 'accepted',
+    createdAt: '2024-06-01T13:00:00Z'
+  },
+  {
+    id: 'slot-4',
+    eventId: 'primordial-festival',
+    artistId: 'dj-pulse',
+    stage: 'Main',
+    startTime: '23:00',
+    endTime: '00:30',
+    status: 'accepted',
+    createdAt: '2024-06-01T14:00:00Z'
+  }
+];
+
 const initialState: LineupState = {
-  events: [],
+  events: DUMMY_EVENTS,
   artists: DUMMY_ARTISTS,
-  slots: [],
-  activeEventId: null,
-  history: [[]],
+  slots: DUMMY_SLOTS,
+  activeEventId: 'primordial-festival',
+  history: [DUMMY_SLOTS],
   historyIndex: 0,
 };
 
@@ -117,12 +182,48 @@ function lineupReducer(state: LineupState, action: LineupAction): LineupState {
         createdAt: new Date().toISOString(),
       };
       
-      // Remove any existing slot for the same time/stage
-      const filteredSlots = state.slots.filter(slot => 
-        !(slot.eventId === newSlot.eventId && 
-          slot.stage === newSlot.stage && 
-          slot.startTime === newSlot.startTime)
-      );
+      // Helper function to check if two time slots overlap
+      const timesOverlap = (slot1: LineupSlot, slot2: LineupSlot): boolean => {
+        const start1 = new Date(`1970-01-01 ${slot1.startTime}`);
+        const end1 = new Date(`1970-01-01 ${slot1.endTime}`);
+        const start2 = new Date(`1970-01-01 ${slot2.startTime}`);
+        const end2 = new Date(`1970-01-01 ${slot2.endTime}`);
+        
+        // Handle next day times (00:00-06:00)
+        if (start1.getHours() >= 0 && start1.getHours() < 6) {
+          start1.setDate(start1.getDate() + 1);
+        }
+        if (end1.getHours() >= 0 && end1.getHours() < 6) {
+          end1.setDate(end1.getDate() + 1);
+        }
+        if (start2.getHours() >= 0 && start2.getHours() < 6) {
+          start2.setDate(start2.getDate() + 1);
+        }
+        if (end2.getHours() >= 0 && end2.getHours() < 6) {
+          end2.setDate(end2.getDate() + 1);
+        }
+
+        return start1 < end2 && start2 < end1;
+      };
+      
+      // Remove any existing slots that would conflict with the new slot
+      const filteredSlots = state.slots.filter(slot => {
+        // Remove exact time/stage matches
+        if (slot.eventId === newSlot.eventId && 
+            slot.stage === newSlot.stage && 
+            slot.startTime === newSlot.startTime) {
+          return false;
+        }
+        
+        // Remove overlapping slots on the same stage/event
+        if (slot.eventId === newSlot.eventId && 
+            slot.stage === newSlot.stage && 
+            timesOverlap(slot, newSlot)) {
+          return false;
+        }
+        
+        return true;
+      });
 
       const newSlots = [...filteredSlots, newSlot];
       
@@ -213,10 +314,35 @@ function loadFromStorage(): LineupState {
     if (!stored) return initialState;
     
     const parsed = JSON.parse(stored);
+    
+    // Merge stored data with dummy data to ensure we always have demo content
+    const mergedEvents = [...DUMMY_EVENTS];
+    const mergedSlots = [...DUMMY_SLOTS];
+    
+    // Add any additional events/slots from storage that aren't in dummy data
+    if (parsed.events) {
+      parsed.events.forEach((event: Event) => {
+        if (!mergedEvents.find(e => e.id === event.id)) {
+          mergedEvents.push(event);
+        }
+      });
+    }
+    
+    if (parsed.slots) {
+      parsed.slots.forEach((slot: LineupSlot) => {
+        if (!mergedSlots.find(s => s.id === slot.id)) {
+          mergedSlots.push(slot);
+        }
+      });
+    }
+    
     return {
       ...initialState,
       ...parsed,
       artists: DUMMY_ARTISTS, // Always use fresh dummy artists
+      events: mergedEvents,
+      slots: mergedSlots,
+      activeEventId: parsed.activeEventId || 'primordial-festival',
     };
   } catch (error) {
     console.error('Error loading lineup data:', error);
