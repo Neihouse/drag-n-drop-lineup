@@ -52,7 +52,8 @@ export default function CreateEvent() {
       type: 'CREATE_EVENT',
       payload: {
         ...formData,
-        status: 'published'
+        status: 'published',
+        locked: false
       }
     });
     
