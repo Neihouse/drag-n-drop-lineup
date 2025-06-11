@@ -69,20 +69,22 @@ function TimelineGrid({ event, slots, artists }: TimelineGridProps) {
   };
 
   return (
-    <div className="relative overflow-x-auto bg-primordial-background-secondary rounded-lg border border-gray-700">
-      <div className="min-w-max relative" style={{ height: (stages.length * 80) + 100 }}>
-        {/* Time Headers */}
-        <div className="absolute top-0 left-0 right-0 h-15 bg-primordial-background-tertiary border-b border-gray-700 flex">
-          <div className="w-50 flex-shrink-0"></div>
-          {timeSlots.map((time, index) => (
-            <div
-              key={time}
-              className="w-20 flex-shrink-0 px-2 py-4 text-center text-xs text-gray-400 border-r border-gray-700"
-            >
-              {index % 4 === 0 ? time : ''}
-            </div>
-          ))}
-        </div>
+    <div className="relative bg-primordial-background-secondary rounded-lg border border-gray-700 overflow-hidden">
+      {/* Scrollable container with fade hint */}
+      <div className="overflow-x-auto scrollbar-hide relative">
+        <div className="min-w-max relative" style={{ height: (stages.length * 80) + 100 }}>
+          {/* Time Headers */}
+          <div className="absolute top-0 left-0 right-0 h-15 bg-primordial-background-tertiary border-b border-gray-700 flex">
+            <div className="w-50 flex-shrink-0"></div>
+            {timeSlots.map((time, index) => (
+              <div
+                key={time}
+                className="w-20 flex-shrink-0 px-2 py-4 text-center text-xs text-gray-400 border-r border-gray-700"
+              >
+                {index % 4 === 0 ? time : ''}
+              </div>
+            ))}
+          </div>
 
         {/* Stage Labels and Grid */}
         {stages.map((stage, stageIndex) => (
@@ -105,24 +107,28 @@ function TimelineGrid({ event, slots, artists }: TimelineGridProps) {
           </div>
         ))}
 
-        {/* Slots */}
-        {slots.map(slot => {
-          const artist = artists.find(a => a.id === slot.artistId);
-          if (!artist) return null;
+          {/* Slots */}
+          {slots.map(slot => {
+            const artist = artists.find(a => a.id === slot.artistId);
+            if (!artist) return null;
 
-          const position = getSlotPosition(slot);
-          if (!position) return null;
+            const position = getSlotPosition(slot);
+            if (!position) return null;
 
-          return (
-            <TimelineSlot
-              key={slot.id}
-              slot={slot}
-              artist={artist}
-              style={position}
-            />
-          );
-        })}
+            return (
+              <TimelineSlot
+                key={slot.id}
+                slot={slot}
+                artist={artist}
+                style={position}
+              />
+            );
+          })}
+        </div>
       </div>
+      
+      {/* Subtle fade gradient hint for horizontal scroll on mobile */}
+      <div className="absolute top-0 right-0 w-8 h-full bg-gradient-to-l from-primordial-background-secondary to-transparent pointer-events-none sm:hidden"></div>
     </div>
   );
 }

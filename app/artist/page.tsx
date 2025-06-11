@@ -59,7 +59,13 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}-${slot.stage.toLowerCase()}-${artist.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}.ics`;
+    
+    // Generate proper slugged filename: 2025-07-05_house-warning_dj-nova.ics
+    const eventSlug = event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const artistSlug = artist.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const dateSlug = event.date; // Already in YYYY-MM-DD format
+    
+    link.download = `${dateSlug}_${eventSlug}_${artistSlug}.ics`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -95,19 +101,37 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
         </div>
 
         {/* Venue */}
-        <div className="flex items-center gap-2 text-gray-600">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <a 
-            href={`https://maps.google.com/?q=${encodeURIComponent(`${event.title} venue`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primordial-accent-primary transition-colors"
-          >
-            {event.title} Venue
-          </a>
+        <div className="text-gray-600">
+          {/* Desktop: Icon + text inline */}
+          <div className="hidden sm:flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <a 
+              href={`https://maps.google.com/?q=${encodeURIComponent(`${event.title} venue`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primordial-accent-primary transition-colors"
+            >
+              {event.title} Venue
+            </a>
+          </div>
+          
+          {/* Mobile: Just link icon below time */}
+          <div className="sm:hidden mt-2">
+            <a 
+              href={`https://maps.google.com/?q=${encodeURIComponent(`${event.title} venue`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm hover:text-primordial-accent-primary transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Venue
+            </a>
+          </div>
         </div>
 
         {/* Status */}
@@ -124,7 +148,12 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
         {/* Actions */}
         <div className="space-y-3 pt-4 border-t border-gray-200">
           {/* Accept/Decline Buttons */}
-          {slot.status === 'pending' && (
+          {event.locked ? (
+            <div className="p-3 bg-gray-100 border border-gray-300 rounded-lg text-center">
+              <span className="text-gray-600 font-medium">Final</span>
+              <p className="text-xs text-gray-500 mt-1">Lineup finalised</p>
+            </div>
+          ) : slot.status === 'pending' ? (
             <div className="flex gap-3">
               <button
                 onClick={() => onStatusChange(slot.id, 'accepted')}
@@ -141,9 +170,7 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
                 Decline
               </button>
             </div>
-          )}
-
-          {slot.status === 'accepted' && (
+          ) : slot.status === 'accepted' ? (
             <button
               onClick={() => onStatusChange(slot.id, 'declined')}
               tabIndex={0}
@@ -151,9 +178,7 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
             >
               Change to Decline
             </button>
-          )}
-
-          {slot.status === 'declined' && (
+          ) : (
             <button
               onClick={() => onStatusChange(slot.id, 'accepted')}
               tabIndex={0}
@@ -167,10 +192,11 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
           <div className="flex gap-2">
             <button
               onClick={() => setIsRiderOpen(true)}
+              disabled={event.locked}
               tabIndex={0}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-gray-400/60"
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-gray-400/60 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Tech-Rider
+              Add Tech Rider
             </button>
             <button
               onClick={downloadICS}
@@ -206,7 +232,7 @@ function SlotCard({ slot, event, artist, onStatusChange, showAnimation }: SlotCa
               <textarea
                 value={riderNotes}
                 onChange={(e) => setRiderNotes(e.target.value)}
-                placeholder="Add your technical requirements, setup notes, or special requests..."
+                placeholder="e.g. 2x XLR inputs, HD25 headphones, stage monitor positioning..."
                 className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primordial-accent-primary focus:border-primordial-accent-primary"
               />
               <div className="flex gap-3">
