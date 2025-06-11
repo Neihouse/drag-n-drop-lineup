@@ -66,13 +66,14 @@ export default function Client() {
   const timeSlots = generateTimeSlots();
 
   const handleDragStart: DndContextProps['onDragStart'] = () => {
+    if (currentEvent?.locked) return; // Prevent drag when locked
     setIsDragging(true);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     setIsDragging(false);
     
-    if (!event.over) return;
+    if (!event.over || currentEvent?.locked) return; // Prevent drop when locked
     
     const artistId = event.active.id as string;
     const timeSlot = event.over.data.current?.timeSlot;
@@ -99,6 +100,11 @@ export default function Client() {
 
   const handleDragCancel: DndContextProps['onDragCancel'] = () => {
     setIsDragging(false);
+  };
+
+  const handleToggleLock = () => {
+    if (!currentEvent) return;
+    dispatch({ type: 'TOGGLE_LOCK', payload: currentEvent.id });
   };
 
   const handleSlotClick = (slot: LineupSlot) => {
@@ -161,11 +167,49 @@ export default function Client() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-green-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-            </svg>
-            Autosaved
+          
+          <div className="flex items-center gap-4">
+            {/* Lock/Unlock Toggle - Promoter Only */}
+            <button
+              onClick={handleToggleLock}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                currentEvent.locked 
+                  ? 'bg-red-600 hover:bg-red-500 text-white' 
+                  : 'bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary'
+              }`}
+              title={currentEvent.locked ? 'Unlock lineup' : 'Lock lineup'}
+            >
+              {currentEvent.locked ? (
+                <>
+                  <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Unlock
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                  </svg>
+                  Lock
+                </>
+              )}
+            </button>
+            
+            {/* Status Indicators */}
+            <div className="flex items-center gap-2 text-sm">
+              {currentEvent.locked && (
+                <span className="text-red-400 font-medium">
+                  🔒 Locked
+                </span>
+              )}
+              <span className="text-green-400">
+                <svg className="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+                Autosaved
+              </span>
+            </div>
           </div>
         </header>
 
@@ -190,19 +234,40 @@ export default function Client() {
             
             <div className="flex-1 overflow-y-auto px-4 pb-4">
               <div className="space-y-3">
-                {filteredArtists.map(artist => (
-                  <Draggable key={artist.id} id={artist.id}>
-                    <div className="flex items-center gap-3 p-3 bg-primordial-background-quaternary rounded-lg hover:bg-primordial-background-hover transition-colors cursor-grab active:cursor-grabbing">
-                      <div className={`w-12 h-12 ${artist.avatarColor} rounded-lg flex items-center justify-center text-white font-semibold text-sm`}>
+                {filteredArtists.map(artist => {
+                  const artistCard = (
+                    <div className={`flex items-center gap-3 p-3 bg-primordial-background-quaternary rounded-lg transition-colors ${
+                      currentEvent?.locked 
+                        ? 'opacity-60 cursor-not-allowed' 
+                        : 'hover:bg-primordial-background-hover cursor-grab active:cursor-grabbing'
+                    }`}>
+                      <div className={`w-12 h-12 ${artist.avatarColor} rounded-lg flex items-center justify-center text-white font-semibold text-sm ${
+                        currentEvent?.locked ? 'opacity-75' : ''
+                      }`}>
                         {artist.name.split(' ').map(n => n[0]).join('')}
                       </div>
                       <div className="flex-1">
                         <div className="font-semibold text-white">{artist.name}</div>
                         <div className="text-sm text-gray-400">{artist.genre}</div>
                       </div>
+                      {currentEvent?.locked && (
+                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      )}
                     </div>
-                  </Draggable>
-                ))}
+                  );
+
+                  return currentEvent?.locked ? (
+                    <div key={artist.id}>
+                      {artistCard}
+                    </div>
+                  ) : (
+                    <Draggable key={artist.id} id={artist.id}>
+                      {artistCard}
+                    </Draggable>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -249,12 +314,16 @@ export default function Client() {
                         data={{ timeSlot }}
                       >
                         <tr 
-                          className={`border-b border-gray-700 hover:bg-primordial-background-tertiary transition-colors cursor-pointer ${
-                            isDragging ? 'bg-primordial-background-tertiary' : ''
+                          className={`border-b border-gray-700 transition-colors ${
+                            currentEvent?.locked 
+                              ? 'opacity-60 cursor-not-allowed' 
+                              : 'hover:bg-primordial-background-tertiary cursor-pointer'
+                          } ${
+                            isDragging && !currentEvent?.locked ? 'bg-primordial-background-tertiary' : ''
                           } ${
                             state.selectedSlot?.id === slot?.id ? 'bg-blue-600/20 border-blue-500' : ''
                           }`}
-                          onClick={() => slot && handleSlotClick(slot)}
+                          onClick={() => slot && !currentEvent?.locked && handleSlotClick(slot)}
                         >
                           <td className="p-4 font-medium">{timeSlot}</td>
                           <td className="p-4">
@@ -286,21 +355,22 @@ export default function Client() {
                 <div className="flex gap-3">
                   <button 
                     onClick={() => dispatch({ type: 'UNDO' })}
-                    disabled={state.historyIndex <= 0}
+                    disabled={state.historyIndex <= 0 || currentEvent?.locked}
                     className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Undo
                   </button>
                   <button 
                     onClick={() => dispatch({ type: 'REDO' })}
-                    disabled={state.historyIndex >= state.history.length - 1}
+                    disabled={state.historyIndex >= state.history.length - 1 || currentEvent?.locked}
                     className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Redo
                   </button>
                   <button 
                     onClick={() => dispatch({ type: 'CLEAR_EVENT_SLOTS', payload: currentEvent.id })}
-                    className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors"
+                    disabled={currentEvent?.locked}
+                    className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Reset
                   </button>
@@ -353,7 +423,7 @@ function SlotDetailsPanel() {
   }, [slot]);
 
   const handleSave = () => {
-    if (!slot) return;
+    if (!slot || event?.locked) return;
 
     dispatch({
       type: 'UPDATE_SLOT',
@@ -372,7 +442,7 @@ function SlotDetailsPanel() {
   };
 
   const handleDelete = () => {
-    if (!slot) return;
+    if (!slot || event?.locked) return;
     
     dispatch({ type: 'REMOVE_SLOT', payload: slot.id });
     dispatch({ type: 'SELECT_SLOT', payload: null });
@@ -390,7 +460,8 @@ function SlotDetailsPanel() {
             <select
               value={editedArtistId}
               onChange={(e) => setEditedArtistId(e.target.value)}
-              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary"
+              disabled={event?.locked}
+              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {state.artists.map(artist => (
                 <option key={artist.id} value={artist.id}>
@@ -415,7 +486,8 @@ function SlotDetailsPanel() {
               type="time"
               value={editedStartTime}
               onChange={(e) => setEditedStartTime(e.target.value)}
-              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary"
+              disabled={event?.locked}
+              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
           
@@ -426,7 +498,8 @@ function SlotDetailsPanel() {
               type="time"
               value={editedEndTime}
               onChange={(e) => setEditedEndTime(e.target.value)}
-              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary"
+              disabled={event?.locked}
+              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -446,17 +519,30 @@ function SlotDetailsPanel() {
           <div className="flex gap-2 pt-4">
             <button
               onClick={handleSave}
-              className="flex-1 bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary font-medium py-2 px-4 rounded-md transition-colors"
+              disabled={event?.locked}
+              className="flex-1 bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save
             </button>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors"
+              disabled={event?.locked}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Delete
             </button>
           </div>
+
+          {event?.locked && (
+            <div className="mt-4 p-3 bg-red-600/10 border border-red-600/20 rounded-md">
+              <div className="flex items-center gap-2 text-red-400 text-sm">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Lineup is locked. Unlock to make changes.
+              </div>
+            </div>
+          )}
 
           {/* Event Info */}
           {event && (

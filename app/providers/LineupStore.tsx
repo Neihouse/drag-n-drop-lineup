@@ -11,6 +11,7 @@ interface Event {
   hours: { start: string; end: string };
   createdAt: string;
   status: 'draft' | 'published';
+  locked: boolean;
 }
 
 interface Artist {
@@ -48,6 +49,7 @@ type LineupAction =
   | { type: 'CREATE_EVENT'; payload: Omit<Event, 'id' | 'createdAt'> }
   | { type: 'UPDATE_EVENT'; payload: { id: string; updates: Partial<Event> } }
   | { type: 'SET_ACTIVE_EVENT'; payload: string }
+  | { type: 'TOGGLE_LOCK'; payload: string }
   | { type: 'ADD_SLOT'; payload: Omit<LineupSlot, 'id' | 'createdAt'> }
   | { type: 'UPDATE_SLOT'; payload: { id: string; updates: Partial<LineupSlot> } }
   | { type: 'REMOVE_SLOT'; payload: string }
@@ -78,7 +80,8 @@ const DUMMY_EVENTS: Event[] = [
     stages: ['Main', 'Patio'],
     hours: { start: '18:00', end: '06:00' },
     createdAt: '2024-06-01T10:00:00Z',
-    status: 'published'
+    status: 'published',
+    locked: false
   },
   {
     id: 'underground-nights',
@@ -87,7 +90,8 @@ const DUMMY_EVENTS: Event[] = [
     stages: ['Main', 'Basement'],
     hours: { start: '20:00', end: '04:00' },
     createdAt: '2024-06-15T14:30:00Z',
-    status: 'draft'
+    status: 'draft',
+    locked: false
   }
 ];
 
@@ -152,6 +156,7 @@ function lineupReducer(state: LineupState, action: LineupAction): LineupState {
         ...action.payload,
         id: `evt-${Date.now()}`,
         createdAt: new Date().toISOString(),
+        locked: false,
       };
       return {
         ...state,
@@ -175,6 +180,17 @@ function lineupReducer(state: LineupState, action: LineupAction): LineupState {
       return {
         ...state,
         activeEventId: action.payload,
+      };
+    }
+
+    case 'TOGGLE_LOCK': {
+      return {
+        ...state,
+        events: state.events.map(event =>
+          event.id === action.payload
+            ? { ...event, locked: !event.locked }
+            : event
+        ),
       };
     }
 
