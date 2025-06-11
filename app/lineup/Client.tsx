@@ -1,30 +1,69 @@
 'use client';
 
+import React from 'react';
 import { DndContext, DragEndEvent, DndContextProps } from '@dnd-kit/core';
-import { useState, useEffect } from 'react';
-import { artists, timeSlots } from '@/lib/data';
-import { loadSlots, saveSlots, clearSlots } from '@/lib/storage';
+import { useState } from 'react';
+import { useLineup } from '@/app/providers/LineupStore';
+import type { LineupSlot, Artist, Event } from '@/app/providers/LineupStore';
 import { Draggable, Droppable } from '@/components/DragDrop';
-import type { Slot } from '@/lib/data';
+import { generateLineupCSV, generateLineupICS, downloadCSV, downloadICS, generateArtistEmail } from '@/lib/exportUtils';
 import Link from 'next/link';
 
 export default function Client() {
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [activeStage, setActiveStage] = useState<'Main' | 'Side Room' | 'Patio'>('Main');
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const { state, dispatch } = useLineup();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDragging, setIsDragging] = useState(false);
-  
-  // Load slots from localStorage when component mounts
-  useEffect(() => {
-    const savedSlots = loadSlots();
-    setSlots(savedSlots);
-  }, []);
+  const [activeStage, setActiveStage] = useState<string>('Main');
 
-  // Auto-save slots when they change
-  useEffect(() => {
-    saveSlots(slots);
-  }, [slots]);
+  // Get current event
+  const currentEvent = state.events.find(e => e.id === state.activeEventId);
+  if (!currentEvent) {
+    return (
+      <div className="min-h-screen bg-primordial-background-primary flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-2">No Event Selected</h1>
+          <p className="text-gray-400 mb-4">Please create or select an event to start building lineups.</p>
+          <Link href="/events/create" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+            Create Event
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Generate time slots based on event hours
+  const generateTimeSlots = () => {
+    const times = [];
+    const startHour = parseInt(currentEvent.hours.start.split(':')[0]);
+    const endHour = parseInt(currentEvent.hours.end.split(':')[0]);
+    
+    // Handle cross-midnight events
+    if (endHour < startHour) {
+      // Same day times
+      for (let hour = startHour; hour <= 23; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) {
+          times.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
+        }
+      }
+      // Next day times
+      for (let hour = 0; hour <= endHour; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) {
+          times.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
+        }
+      }
+    } else {
+      // Same day event
+      for (let hour = startHour; hour <= endHour; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) {
+          times.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
+        }
+      }
+    }
+    
+    return times;
+  };
+
+  const timeSlots = generateTimeSlots();
 
   const handleDragStart: DndContextProps['onDragStart'] = () => {
     setIsDragging(true);
@@ -38,43 +77,65 @@ export default function Client() {
     const artistId = event.active.id as string;
     const timeSlot = event.over.data.current?.timeSlot;
     
-    if (!timeSlot) return;
+    if (!timeSlot || !currentEvent) return;
     
-    // Remove any existing slot for this time/stage combination
-    const filteredSlots = slots.filter(slot => 
-      !(slot.start === timeSlot && slot.stage === activeStage)
-    );
+    // Find next available time slot (assume 1-hour slots)
+    const startIndex = timeSlots.findIndex(t => t === timeSlot);
+    const endIndex = Math.min(startIndex + 4, timeSlots.length - 1); // 4 * 15min = 1 hour
+    const endTime = timeSlots[endIndex] || timeSlot;
     
-    // Add the new slot
-    const newSlots = [...filteredSlots, { 
-      artistId, 
-      start: timeSlot, 
-      stage: activeStage 
-    }];
-    
-    setSlots(newSlots);
+    dispatch({
+      type: 'ADD_SLOT',
+      payload: {
+        eventId: currentEvent.id,
+        artistId,
+        stage: activeStage,
+        startTime: timeSlot,
+        endTime: endTime,
+        status: 'pending'
+      }
+    });
   };
 
   const handleDragCancel: DndContextProps['onDragCancel'] = () => {
     setIsDragging(false);
   };
 
-  const handleClearAll = () => {
-    setSlots([]);
-    clearSlots();
+  const handleSlotClick = (slot: LineupSlot) => {
+    dispatch({ type: 'SELECT_SLOT', payload: slot });
+  };
+
+  const handleExport = () => {
+    if (!currentEvent) return;
+    
+    const eventSlots = state.slots.filter(s => s.eventId === currentEvent.id);
+    const csvContent = generateLineupCSV(currentEvent, eventSlots, state.artists);
+    const icsContent = generateLineupICS(currentEvent, eventSlots, state.artists);
+    
+    downloadCSV(csvContent, `${currentEvent.title}-lineup-${currentEvent.date}.csv`);
+    downloadICS(icsContent, `${currentEvent.title}-lineup-${currentEvent.date}.ics`);
+  };
+
+  const handleEmailArtists = () => {
+    if (!currentEvent) return;
+    
+    const eventSlots = state.slots.filter(s => s.eventId === currentEvent.id);
+    const emailUrl = generateArtistEmail(currentEvent, eventSlots, state.artists);
+    window.open(emailUrl);
   };
 
   // Filter artists based on search query
-  const filteredArtists = artists.filter(artist =>
+  const filteredArtists = state.artists.filter(artist =>
     artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     artist.genre.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Get slots for current stage
-  const currentStageSlots = slots.filter(slot => slot.stage === activeStage);
+  // Get slots for current event and stage
+  const eventSlots = state.slots.filter(s => s.eventId === currentEvent.id);
+  const currentStageSlots = eventSlots.filter(slot => slot.stage === activeStage);
 
   return (
-    <div className="min-h-screen bg-primordial-background-secondary text-white">
+    <div className="min-h-screen bg-primordial-background-primary text-white">
       <DndContext 
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -89,12 +150,15 @@ export default function Client() {
               </svg>
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-6 h-6 bg-primordial-accent-primary rounded flex items-center justify-center">
+                <svg className="w-4 h-4 text-primordial-background-primary" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
               </div>
-              <h1 className="text-xl font-semibold">DJ Lineup Builder</h1>
+              <div>
+                <h1 className="text-xl font-semibold">{currentEvent.title}</h1>
+                <p className="text-sm text-gray-400">{currentEvent.date}</p>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2 text-sm text-green-400">
@@ -119,7 +183,7 @@ export default function Client() {
                   placeholder="Search artists"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-primordial-background-quaternary border border-gray-600 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full bg-primordial-background-quaternary border border-gray-600 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-primordial-accent-primary"
                 />
               </div>
             </div>
@@ -134,7 +198,7 @@ export default function Client() {
                       </div>
                       <div className="flex-1">
                         <div className="font-semibold text-white">{artist.name}</div>
-                        <div className="text-sm text-gray-400">Genre: {artist.genre}</div>
+                        <div className="text-sm text-gray-400">{artist.genre}</div>
                       </div>
                     </div>
                   </Draggable>
@@ -148,13 +212,13 @@ export default function Client() {
             {/* Stage Tabs */}
             <div className="bg-primordial-background-tertiary border-b border-gray-700 px-6 py-3">
               <div className="flex gap-8">
-                {(['Main', 'Side Room', 'Patio'] as const).map(stage => (
+                {currentEvent.stages.map(stage => (
                   <button
                     key={stage}
                     onClick={() => setActiveStage(stage)}
                     className={`px-4 py-2 font-medium transition-colors ${
                       activeStage === stage 
-                        ? 'text-white border-b-2 border-blue-500' 
+                        ? 'text-white border-b-2 border-primordial-accent-primary' 
                         : 'text-gray-400 hover:text-white'
                     }`}
                   >
@@ -175,8 +239,8 @@ export default function Client() {
                 </thead>
                 <tbody>
                   {timeSlots.map(timeSlot => {
-                    const slot = currentStageSlots.find(s => s.start === timeSlot);
-                    const artist = slot ? artists.find(a => a.id === slot.artistId) : null;
+                    const slot = currentStageSlots.find(s => s.startTime === timeSlot);
+                    const artist = slot ? state.artists.find(a => a.id === slot.artistId) : null;
                     
                     return (
                       <Droppable 
@@ -185,10 +249,12 @@ export default function Client() {
                         data={{ timeSlot }}
                       >
                         <tr 
-                          className={`border-b border-gray-700 hover:bg-primordial-background-tertiary transition-colors ${
+                          className={`border-b border-gray-700 hover:bg-primordial-background-tertiary transition-colors cursor-pointer ${
                             isDragging ? 'bg-primordial-background-tertiary' : ''
+                          } ${
+                            state.selectedSlot?.id === slot?.id ? 'bg-blue-600/20 border-blue-500' : ''
                           }`}
-                          onClick={() => setSelectedSlot(timeSlot)}
+                          onClick={() => slot && handleSlotClick(slot)}
                         >
                           <td className="p-4 font-medium">{timeSlot}</td>
                           <td className="p-4">
@@ -198,6 +264,7 @@ export default function Client() {
                                   {artist.name.split(' ').map(n => n[0]).join('')}
                                 </div>
                                 <span className="font-medium">{artist.name}</span>
+                                <span className="text-xs text-gray-400">({slot?.startTime} - {slot?.endTime})</span>
                               </div>
                             ) : (
                               <span className="text-gray-500">
@@ -217,61 +284,199 @@ export default function Client() {
             <div className="bg-primordial-background-tertiary border-t border-gray-700 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex gap-3">
-                  <button className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors">
+                  <button 
+                    onClick={() => dispatch({ type: 'UNDO' })}
+                    disabled={state.historyIndex <= 0}
+                    className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     Undo
                   </button>
-                  <button className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors">
+                  <button 
+                    onClick={() => dispatch({ type: 'REDO' })}
+                    disabled={state.historyIndex >= state.history.length - 1}
+                    className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     Redo
                   </button>
                   <button 
-                    onClick={handleClearAll}
+                    onClick={() => dispatch({ type: 'CLEAR_EVENT_SLOTS', payload: currentEvent.id })}
                     className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors"
                   >
                     Reset
                   </button>
-                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors">
+                  <button 
+                    onClick={handleExport}
+                    className="px-4 py-2 bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary rounded-md text-sm font-medium transition-colors"
+                  >
                     Export
+                  </button>
+                  <button 
+                    onClick={handleEmailArtists}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Email Artists
                   </button>
                 </div>
                 <div className="text-sm text-gray-400">
-                  Autosaved
+                  {eventSlots.length} slots scheduled
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right Sidebar - Slot Details */}
-          <div className="w-80 bg-primordial-background-tertiary border-l border-gray-700 p-6">
-            <h3 className="text-lg font-semibold mb-6">Slot Details</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Artist</label>
-                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Stage</label>
-                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Start Time</label>
-                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">End Time</label>
-                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
-              </div>
-              
-              <button className="w-full mt-6 bg-primordial-background-secondary hover:bg-black text-white font-medium py-2 px-4 rounded-md transition-colors">
-                Save
-              </button>
-            </div>
-          </div>
+          <SlotDetailsPanel />
         </div>
       </DndContext>
+    </div>
+  );
+}
+
+// Slot Details Panel Component
+function SlotDetailsPanel() {
+  const { state, dispatch } = useLineup();
+  const slot = state.selectedSlot;
+  const artist = slot ? state.artists.find(a => a.id === slot.artistId) : null;
+  const event = slot ? state.events.find(e => e.id === slot.eventId) : null;
+
+  const [editedStartTime, setEditedStartTime] = useState(slot?.startTime || '');
+  const [editedEndTime, setEditedEndTime] = useState(slot?.endTime || '');
+  const [editedArtistId, setEditedArtistId] = useState(slot?.artistId || '');
+
+  // Update local state when selected slot changes
+  React.useEffect(() => {
+    if (slot) {
+      setEditedStartTime(slot.startTime);
+      setEditedEndTime(slot.endTime);
+      setEditedArtistId(slot.artistId);
+    }
+  }, [slot]);
+
+  const handleSave = () => {
+    if (!slot) return;
+
+    dispatch({
+      type: 'UPDATE_SLOT',
+      payload: {
+        id: slot.id,
+        updates: {
+          startTime: editedStartTime,
+          endTime: editedEndTime,
+          artistId: editedArtistId,
+        }
+      }
+    });
+
+    // Show success toast (you can implement this)
+    console.log('Slot updated successfully!');
+  };
+
+  const handleDelete = () => {
+    if (!slot) return;
+    
+    dispatch({ type: 'REMOVE_SLOT', payload: slot.id });
+    dispatch({ type: 'SELECT_SLOT', payload: null });
+  };
+
+  return (
+    <div className="w-80 bg-primordial-background-tertiary border-l border-gray-700 p-6">
+      <h3 className="text-lg font-semibold mb-6">Slot Details</h3>
+      
+      {slot ? (
+        <div className="space-y-4">
+          {/* Artist Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Artist</label>
+            <select
+              value={editedArtistId}
+              onChange={(e) => setEditedArtistId(e.target.value)}
+              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary"
+            >
+              {state.artists.map(artist => (
+                <option key={artist.id} value={artist.id}>
+                  {artist.name} ({artist.genre})
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Stage Display */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Stage</label>
+            <div className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-gray-400">
+              {slot.stage}
+            </div>
+          </div>
+          
+          {/* Start Time */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Start Time</label>
+            <input
+              type="time"
+              value={editedStartTime}
+              onChange={(e) => setEditedStartTime(e.target.value)}
+              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary"
+            />
+          </div>
+          
+          {/* End Time */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">End Time</label>
+            <input
+              type="time"
+              value={editedEndTime}
+              onChange={(e) => setEditedEndTime(e.target.value)}
+              className="w-full px-3 py-2 bg-primordial-background-quaternary border border-gray-600 rounded-md text-white focus:outline-none focus:border-primordial-accent-primary"
+            />
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+            <div className={`px-3 py-2 rounded-md text-sm font-medium ${
+              slot.status === 'accepted' ? 'bg-green-600/20 text-green-300' :
+              slot.status === 'declined' ? 'bg-red-600/20 text-red-300' :
+              'bg-gray-600/20 text-gray-300'
+            }`}>
+              {slot.status.charAt(0).toUpperCase() + slot.status.slice(1)}
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-4">
+            <button
+              onClick={handleSave}
+              className="flex-1 bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary font-medium py-2 px-4 rounded-md transition-colors"
+            >
+              Save
+            </button>
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+
+          {/* Event Info */}
+          {event && (
+            <div className="pt-4 border-t border-gray-600">
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Event</h4>
+              <div className="text-sm text-gray-400">
+                <div>{event.title}</div>
+                <div>{event.date}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="text-center text-gray-400 mt-8">
+          <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          <p>Click on a scheduled slot to edit details</p>
+        </div>
+      )}
     </div>
   );
 } 

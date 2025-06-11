@@ -38,6 +38,7 @@ interface LineupState {
   artists: Artist[];
   slots: LineupSlot[];
   activeEventId: string | null;
+  selectedSlot: LineupSlot | null;
   history: LineupSlot[][];
   historyIndex: number;
 }
@@ -50,6 +51,7 @@ type LineupAction =
   | { type: 'ADD_SLOT'; payload: Omit<LineupSlot, 'id' | 'createdAt'> }
   | { type: 'UPDATE_SLOT'; payload: { id: string; updates: Partial<LineupSlot> } }
   | { type: 'REMOVE_SLOT'; payload: string }
+  | { type: 'SELECT_SLOT'; payload: LineupSlot | null }
   | { type: 'UNDO' }
   | { type: 'REDO' }
   | { type: 'CLEAR_EVENT_SLOTS'; payload: string }
@@ -137,6 +139,7 @@ const initialState: LineupState = {
   artists: DUMMY_ARTISTS,
   slots: DUMMY_SLOTS,
   activeEventId: 'primordial-festival',
+  selectedSlot: null,
   history: [DUMMY_SLOTS],
   historyIndex: 0,
 };
@@ -172,6 +175,13 @@ function lineupReducer(state: LineupState, action: LineupAction): LineupState {
       return {
         ...state,
         activeEventId: action.payload,
+      };
+    }
+
+    case 'SELECT_SLOT': {
+      return {
+        ...state,
+        selectedSlot: action.payload,
       };
     }
 
@@ -343,6 +353,7 @@ function loadFromStorage(): LineupState {
       events: mergedEvents,
       slots: mergedSlots,
       activeEventId: parsed.activeEventId || 'primordial-festival',
+      selectedSlot: null, // Always start with no selection
     };
   } catch (error) {
     console.error('Error loading lineup data:', error);
