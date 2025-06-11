@@ -1,8 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import { useLineup } from './providers/LineupStore';
 
 export default function Home() {
+  const { state } = useLineup();
+
   return (
-    <div className="relative flex size-full min-h-screen flex-col bg-[#121417]">
+    <div className="relative flex size-full min-h-screen flex-col bg-primordial-background-primary">
       <div className="layout-container flex h-full grow flex-col">
         {/* Header */}
         <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2b2f36] px-10 py-3">
@@ -16,13 +21,13 @@ export default function Home() {
           </div>
           <div className="flex flex-1 justify-end gap-8">
             <div className="flex items-center gap-9">
-              <a className="text-white text-sm font-medium leading-normal" href="#">Line-Up</a>
+              <a className="text-white text-sm font-medium leading-normal" href="#">About</a>
             </div>
             <Link
-              href="/lineup"
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#dae4f5] text-[#121417] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#c1d3f0] transition-colors"
+              href="/events/create"
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primordial-accent-primary text-primordial-background-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
             >
-              <span className="truncate">Go to Planner</span>
+              <span className="truncate">Create Event</span>
             </Link>
           </div>
         </header>
@@ -47,29 +52,135 @@ export default function Home() {
                       Drag and drop artists onto a live timeline to create line-ups in seconds.
                     </h2>
                   </div>
-                  <Link
-                    href="/lineup"
-                    className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#dae4f5] text-[#121417] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#c1d3f0] transition-colors"
-                  >
-                    <span className="truncate">Go to Planner</span>
-                  </Link>
+                  
+                  <div className="flex gap-4">
+                    <Link
+                      href="/events/create"
+                      className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-primordial-accent-primary text-primordial-background-primary text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
+                    >
+                      <span className="truncate">Create Event</span>
+                    </Link>
+                    
+                    {state.events.length > 0 && (
+                      <Link
+                        href="/lineup"
+                        className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-transparent border-2 border-white text-white text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-white/10 transition-colors"
+                      >
+                        <span className="truncate">Go to Planner</span>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Events Dashboard */}
+            {state.events.length > 0 && (
+              <div className="p-4">
+                <div className="bg-primordial-background-tertiary rounded-xl p-6">
+                  <h3 className="text-2xl font-bold text-white mb-6">Your Events</h3>
+                  
+                  <div className="grid gap-4">
+                    {state.events.map(event => {
+                      const eventSlots = state.slots.filter(slot => slot.eventId === event.id);
+                      const totalArtists = new Set(eventSlots.map(slot => slot.artistId)).size;
+                      
+                      return (
+                        <div key={event.id} className="bg-primordial-background-quaternary rounded-lg p-4 hover:bg-primordial-background-hover transition-colors">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-white text-lg">{event.title}</h4>
+                              <p className="text-gray-400">{event.date}</p>
+                              <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                                <span>{event.stages.length} stages</span>
+                                <span>•</span>
+                                <span>{totalArtists} artists scheduled</span>
+                                <span>•</span>
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  event.status === 'published' 
+                                    ? 'bg-green-600/20 text-green-300' 
+                                    : 'bg-yellow-600/20 text-yellow-300'
+                                }`}>
+                                  {event.status}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Link
+                                href={`/lineup?event=${event.id}`}
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                              >
+                                Edit Lineup
+                              </Link>
+                              <Link
+                                href={`/public/${event.id}`}
+                                className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover text-white rounded-lg text-sm font-medium transition-colors"
+                              >
+                                Public View
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Features Section */}
             <div className="p-4">
-              <div
-                className="bg-cover bg-center flex flex-col items-stretch justify-end rounded-xl pt-[132px]"
-                style={{
-                  backgroundImage: 'linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBKZOXOmQkUFTAdhBW5f3kTvBjrutsazVB2IB_tQ19UgCT4eQ5lqZ8t6eMHZ29sE2jzR_Iu7X1I9YzMnM8sX1SmrCOc2ZnF-Wvnc9Zo3KWIYbMzFkIYchVJVz9YYbSlD8iGDh5ZcZySbxH4eBTqVxQVAmESaGqfzqAIUpV12BuoqN8f8tsAPYsytG_-wdKhHF9OgpiAQLUSpX0L0BGK3srVW8GgsBHUYkmeTLdCavgfOGUwgO8I35eIE0Q8jrMGKfnC9xs1YcUyAM8")'
-                }}
-              >
-                <div className="flex w-full items-end justify-between gap-4 p-4">
-                  <div className="flex max-w-[440px] flex-1 flex-col gap-1">
-                    <p className="text-white tracking-light text-2xl font-bold leading-tight max-w-[440px]">Key Features</p>
-                    <p className="text-white text-base font-medium leading-normal">Drag artists, auto-save, one-click export</p>
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Promoter Flow */}
+                <div className="bg-primordial-background-tertiary rounded-lg p-6">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                    </svg>
                   </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">For Promoters</h3>
+                  <p className="text-gray-400 text-sm mb-4">Create events, set up stages, and hand off to your booking team.</p>
+                  <Link
+                    href="/events/create"
+                    className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                  >
+                    Create Event →
+                  </Link>
+                </div>
+
+                {/* Booker Flow */}
+                <div className="bg-primordial-background-tertiary rounded-lg p-6">
+                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">For Bookers</h3>
+                  <p className="text-gray-400 text-sm mb-4">Drag artists to timeline, manage conflicts, export schedules.</p>
+                  <Link
+                    href="/lineup"
+                    className="text-green-400 hover:text-green-300 text-sm font-medium"
+                  >
+                    Build Lineup →
+                  </Link>
+                </div>
+
+                {/* Artist Flow */}
+                <div className="bg-primordial-background-tertiary rounded-lg p-6">
+                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">For Artists</h3>
+                  <p className="text-gray-400 text-sm mb-4">View your slots, accept or decline bookings.</p>
+                  <Link
+                    href="/artist/dashboard"
+                    className="text-purple-400 hover:text-purple-300 text-sm font-medium"
+                  >
+                    Artist Dashboard →
+                  </Link>
                 </div>
               </div>
             </div>

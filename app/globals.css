@@ -10,6 +10,46 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Primordial Groove Design Tokens */
+  --color-primordial-background-primary: #121417;
+  --color-primordial-background-secondary: #1a1a1a;
+  --color-primordial-background-tertiary: #2a2a2a;
+  --color-primordial-background-quaternary: #3a3a3a;
+  --color-primordial-background-hover: #4a4a4a;
+  
+  --color-primordial-accent-primary: #dae4f5;
+  --color-primordial-accent-hover: #c1d3f0;
+  
+  --color-primordial-border-primary: #374151;
+  --color-primordial-border-secondary: #4b5563;
+  
+  --color-primordial-text-primary: #ffffff;
+  --color-primordial-text-secondary: #d1d5db;
+  --color-primordial-text-tertiary: #9ca3af;
+  --color-primordial-text-muted: #6b7280;
+  
+  --color-primordial-status-success: #10b981;
+  --color-primordial-status-warning: #f59e0b;
+  --color-primordial-status-error: #ef4444;
+  --color-primordial-status-info: #3b82f6;
+  
+  /* Avatar Colors */
+  --color-avatar-amber: #fbbf24;
+  --color-avatar-orange: #fb923c;
+  --color-avatar-rose: #fb7185;
+  --color-avatar-teal: #2dd4bf;
+  --color-avatar-blue: #60a5fa;
+  --color-avatar-purple: #a78bfa;
+  --color-avatar-green: #34d399;
+  --color-avatar-red: #f87171;
+  
+  /* Typography */
+  --font-family-primordial: "Space Grotesk", "Noto Sans", system-ui, sans-serif;
+  
+  /* Spacing tokens are already available via Tailwind defaults */
+  /* Border radius tokens are already available via Tailwind defaults */
+  /* Shadow tokens are already available via Tailwind defaults */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +62,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Space Grotesk", "Noto Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-family-primordial);
 }

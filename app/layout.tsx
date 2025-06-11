@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { LineupProvider } from './providers/LineupStore';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,12 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#121417] min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-primordial-background-primary min-h-screen`}
         style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
       >
-        {children}
+        <LineupProvider>
+          {children}
+        </LineupProvider>
       </body>
     </html>
   );

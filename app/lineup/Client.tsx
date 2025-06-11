@@ -74,14 +74,14 @@ export default function Client() {
   const currentStageSlots = slots.filter(slot => slot.stage === activeStage);
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="min-h-screen bg-primordial-background-secondary text-white">
       <DndContext 
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
         {/* Header */}
-        <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex items-center justify-between">
+        <header className="bg-primordial-background-tertiary border-b border-gray-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-gray-400 hover:text-white">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ export default function Client() {
         {/* Main Layout */}
         <div className="flex h-[calc(100vh-73px)]">
           {/* Left Sidebar - Artist List */}
-          <div className="w-80 bg-[#2a2a2a] border-r border-gray-700 flex flex-col">
+          <div className="w-80 bg-primordial-background-tertiary border-r border-gray-700 flex flex-col">
             <div className="p-4">
               <div className="relative">
                 <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@ export default function Client() {
                   placeholder="Search artists"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#3a3a3a] border border-gray-600 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full bg-primordial-background-quaternary border border-gray-600 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function Client() {
               <div className="space-y-3">
                 {filteredArtists.map(artist => (
                   <Draggable key={artist.id} id={artist.id}>
-                    <div className="flex items-center gap-3 p-3 bg-[#3a3a3a] rounded-lg hover:bg-[#4a4a4a] transition-colors cursor-grab active:cursor-grabbing">
+                    <div className="flex items-center gap-3 p-3 bg-primordial-background-quaternary rounded-lg hover:bg-primordial-background-hover transition-colors cursor-grab active:cursor-grabbing">
                       <div className={`w-12 h-12 ${artist.avatarColor} rounded-lg flex items-center justify-center text-white font-semibold text-sm`}>
                         {artist.name.split(' ').map(n => n[0]).join('')}
                       </div>
@@ -146,7 +146,7 @@ export default function Client() {
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col">
             {/* Stage Tabs */}
-            <div className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-3">
+            <div className="bg-primordial-background-tertiary border-b border-gray-700 px-6 py-3">
               <div className="flex gap-8">
                 {(['Main', 'Side Room', 'Patio'] as const).map(stage => (
                   <button
@@ -167,7 +167,7 @@ export default function Client() {
             {/* Timeline Table */}
             <div className="flex-1 overflow-auto">
               <table className="w-full">
-                <thead className="bg-[#2a2a2a] sticky top-0">
+                <thead className="bg-primordial-background-tertiary sticky top-0">
                   <tr>
                     <th className="text-left p-4 font-medium text-gray-300 border-b border-gray-700">Time</th>
                     <th className="text-left p-4 font-medium text-gray-300 border-b border-gray-700">Artist</th>
@@ -185,8 +185,8 @@ export default function Client() {
                         data={{ timeSlot }}
                       >
                         <tr 
-                          className={`border-b border-gray-700 hover:bg-[#2a2a2a] transition-colors ${
-                            isDragging ? 'bg-[#2a2a2a]' : ''
+                          className={`border-b border-gray-700 hover:bg-primordial-background-tertiary transition-colors ${
+                            isDragging ? 'bg-primordial-background-tertiary' : ''
                           }`}
                           onClick={() => setSelectedSlot(timeSlot)}
                         >
@@ -214,18 +214,18 @@ export default function Client() {
             </div>
 
             {/* Bottom Controls */}
-            <div className="bg-[#2a2a2a] border-t border-gray-700 px-6 py-4">
+            <div className="bg-primordial-background-tertiary border-t border-gray-700 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex gap-3">
-                  <button className="px-4 py-2 bg-[#3a3a3a] hover:bg-[#4a4a4a] rounded-md text-sm font-medium transition-colors">
+                  <button className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors">
                     Undo
                   </button>
-                  <button className="px-4 py-2 bg-[#3a3a3a] hover:bg-[#4a4a4a] rounded-md text-sm font-medium transition-colors">
+                  <button className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors">
                     Redo
                   </button>
                   <button 
                     onClick={handleClearAll}
-                    className="px-4 py-2 bg-[#3a3a3a] hover:bg-[#4a4a4a] rounded-md text-sm font-medium transition-colors"
+                    className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover rounded-md text-sm font-medium transition-colors"
                   >
                     Reset
                   </button>
@@ -241,31 +241,31 @@ export default function Client() {
           </div>
 
           {/* Right Sidebar - Slot Details */}
-          <div className="w-80 bg-[#2a2a2a] border-l border-gray-700 p-6">
+          <div className="w-80 bg-primordial-background-tertiary border-l border-gray-700 p-6">
             <h3 className="text-lg font-semibold mb-6">Slot Details</h3>
             
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Artist</label>
-                <div className="w-full h-10 bg-[#3a3a3a] border border-gray-600 rounded-md"></div>
+                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Stage</label>
-                <div className="w-full h-10 bg-[#3a3a3a] border border-gray-600 rounded-md"></div>
+                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Start Time</label>
-                <div className="w-full h-10 bg-[#3a3a3a] border border-gray-600 rounded-md"></div>
+                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">End Time</label>
-                <div className="w-full h-10 bg-[#3a3a3a] border border-gray-600 rounded-md"></div>
+                <div className="w-full h-10 bg-primordial-background-quaternary border border-gray-600 rounded-md"></div>
               </div>
               
-              <button className="w-full mt-6 bg-[#1a1a1a] hover:bg-black text-white font-medium py-2 px-4 rounded-md transition-colors">
+              <button className="w-full mt-6 bg-primordial-background-secondary hover:bg-black text-white font-medium py-2 px-4 rounded-md transition-colors">
                 Save
               </button>
             </div>

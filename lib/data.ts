@@ -17,28 +17,28 @@ export const artists: Artist[] = [
     id: 'dj-nova', 
     name: 'DJ Nova', 
     genre: 'House',
-    avatarColor: 'bg-amber-400',
+    avatarColor: 'bg-avatar-amber',
     minutes: 45 
   },
   { 
     id: 'dj-echo', 
     name: 'DJ Echo', 
     genre: 'Techno',
-    avatarColor: 'bg-orange-400',
+    avatarColor: 'bg-avatar-orange',
     minutes: 45 
   },
   { 
     id: 'dj-pulse', 
     name: 'DJ Pulse', 
     genre: 'Trance',
-    avatarColor: 'bg-rose-400',
+    avatarColor: 'bg-avatar-rose',
     minutes: 45 
   },
   { 
     id: 'dj-rhythm', 
     name: 'DJ Rhythm', 
     genre: 'Hip Hop',
-    avatarColor: 'bg-teal-400',
+    avatarColor: 'bg-avatar-teal',
     minutes: 45 
   },
 ];
