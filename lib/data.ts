@@ -1,19 +1,58 @@
 export interface Artist {
   id: string;
   name: string;
+  genre: string;
+  avatarColor: string;
   minutes: number;
 }
 
 export interface Slot {
   artistId: string;
-  start: number;
+  start: string; // Changed to string to handle times like "10:00 PM"
+  stage: 'Main' | 'Side Room' | 'Patio';
 }
 
 export const artists: Artist[] = [
-  { id: 'neihouse', name: 'Neihouse', minutes: 45 },
-  { id: 'blove',    name: 'Blove',    minutes: 45 },
-  { id: 'markiv',   name: 'Markiv',   minutes: 45 },
-  { id: 'chaoz',    name: 'Chaoz',    minutes: 45 },
-  { id: 'nebula',   name: 'Nebula',   minutes: 45 },
-  { id: 'synapse',  name: 'Synapse',  minutes: 45 },
+  { 
+    id: 'dj-nova', 
+    name: 'DJ Nova', 
+    genre: 'House',
+    avatarColor: 'bg-amber-400',
+    minutes: 45 
+  },
+  { 
+    id: 'dj-echo', 
+    name: 'DJ Echo', 
+    genre: 'Techno',
+    avatarColor: 'bg-orange-400',
+    minutes: 45 
+  },
+  { 
+    id: 'dj-pulse', 
+    name: 'DJ Pulse', 
+    genre: 'Trance',
+    avatarColor: 'bg-rose-400',
+    minutes: 45 
+  },
+  { 
+    id: 'dj-rhythm', 
+    name: 'DJ Rhythm', 
+    genre: 'Hip Hop',
+    avatarColor: 'bg-teal-400',
+    minutes: 45 
+  },
+];
+
+// Time slots for the timeline
+export const timeSlots = [
+  '10:00 PM',
+  '10:15 PM', 
+  '10:30 PM',
+  '10:45 PM',
+  '11:00 PM',
+  '11:15 PM',
+  '11:30 PM', 
+  '11:45 PM',
+  '12:00 AM',
+  '12:15 AM',
 ]; 

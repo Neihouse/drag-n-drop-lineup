@@ -23,7 +23,9 @@ export const loadSlots = (): Slot[] => {
       typeof slot === 'object' && 
       slot !== null && 
       typeof slot.artistId === 'string' && 
-      typeof slot.start === 'number'
+      typeof slot.start === 'string' &&
+      typeof slot.stage === 'string' &&
+      ['Main', 'Side Room', 'Patio'].includes(slot.stage)
     );
   } catch (error) {
     console.error('Error loading slots:', error);
