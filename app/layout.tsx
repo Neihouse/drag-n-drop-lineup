@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navigation from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lineup POC",
-  description: "Drag and drop lineup planner",
+  title: "Primordial Groove - Lineup Planner",
+  description: "Drag and drop artists onto a live timeline to create line-ups in seconds.",
 };
 
 export default function RootLayout({
@@ -25,11 +24,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;700"
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#121417] min-h-screen`}
+        style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
       >
-        <Navigation />
-        <main className="min-h-screen">{children}</main>
+        {children}
       </body>
     </html>
   );
