@@ -170,8 +170,8 @@ export default function Client() {
           </div>
           
           <div className="flex items-center gap-4">
-            {/* Lock/Unlock Toggle - Promoter Only */}
-            {CURRENT_ROLE === 'promoter' && (
+            {/* Lock/Unlock Toggle - Promoters & Bookers */}
+            {(CURRENT_ROLE === 'promoter' || CURRENT_ROLE === 'booker') && (
               <button
                 onClick={handleToggleLock}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${

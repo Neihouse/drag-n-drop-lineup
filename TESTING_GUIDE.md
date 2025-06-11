@@ -14,20 +14,20 @@ export const CURRENT_ARTIST_ID = 'neihouse';        // neihouse | gobi | quietpa
 
 | Role | Access | Features |
 |------|--------|----------|
-| **Promoter** | Full control | Lock/unlock lineups, all DnD |
-| **Booker** | Build lineups | DnD enabled, no lock controls |
-| **Artist** | View dashboard | Accept/decline slots, tech rider |
+| **Promoter** | Full control | Lock/unlock lineups, all DnD, full management |
+| **Booker** | Build lineups | Lock/unlock lineups, all DnD, lineup building |
+| **Artist** | View dashboard | Accept/decline slots, tech rider, calendar downloads |
 
 ---
 
 ## **⚡ Testing Scenarios**
 
 ### **1. Lock Toggle Testing**
-1. Set `CURRENT_ROLE: 'promoter'` 
+1. Set `CURRENT_ROLE: 'promoter'` or `'booker'`
 2. Build a lineup with conflicts
 3. Click **Lock** button → All controls disabled
-4. Switch to `CURRENT_ROLE: 'booker'` → No lock button visible
-5. Try drag/drop → Blocked with opacity + cursor feedback
+4. Try drag/drop → Blocked with opacity + cursor feedback
+5. Switch to `CURRENT_ROLE: 'artist'` → No lock button visible
 
 ### **2. Artist Dashboard Testing**
 1. Set `CURRENT_ARTIST_ID: 'neihouse'`
