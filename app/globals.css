@@ -1,63 +1,72 @@
-@import "tailwindcss";
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 :root {
   --background: #121212;
   --foreground: #ffffff;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  /* Primordial Groove Design Tokens */
-  --color-primordial-background-primary: #121212;
-  --color-primordial-background-secondary: #1a1a1a;
-  --color-primordial-background-tertiary: #2a2a2a;
-  --color-primordial-background-quaternary: #3a3a3a;
-  --color-primordial-background-hover: #4a4a4a;
-  
-  --color-primordial-accent-primary: #00FFCC;
-  --color-primordial-accent-hover: #00E6B8;
-  --color-primordial-accent-muted: #00CC99;
-  
-  --color-primordial-border-primary: #374151;
-  --color-primordial-border-secondary: #4b5563;
-  
-  --color-primordial-text-primary: #ffffff;
-  --color-primordial-text-secondary: #d1d5db;
-  --color-primordial-text-tertiary: #9ca3af;
-  --color-primordial-text-muted: #6b7280;
-  
-  --color-primordial-status-success: #10b981;
-  --color-primordial-status-warning: #f59e0b;
-  --color-primordial-status-error: #ef4444;
-  --color-primordial-status-info: #3b82f6;
-  --color-primordial-status-pending: #6b7280;
-  --color-primordial-status-accepted: #10b981;
-  --color-primordial-status-declined: #ef4444;
-  
-  --color-primordial-card-background: #F5F5F5;
-  --color-primordial-card-text: #1f2937;
-  
-  /* Avatar Colors */
-  --color-avatar-amber: #fbbf24;
-  --color-avatar-orange: #fb923c;
-  --color-avatar-rose: #fb7185;
-  --color-avatar-teal: #2dd4bf;
-  --color-avatar-blue: #60a5fa;
-  --color-avatar-purple: #a78bfa;
-  --color-avatar-green: #34d399;
-  --color-avatar-red: #f87171;
-  
-  /* Typography */
   --font-family-primordial: "Space Grotesk", "Noto Sans", system-ui, sans-serif;
-  --font-family-heading: "Space Grotesk", "Orbitron", system-ui, sans-serif;
   
-  /* Spacing tokens are already available via Tailwind defaults */
-  /* Border radius tokens are already available via Tailwind defaults */
-  /* Shadow tokens are already available via Tailwind defaults */
+  /* Design token CSS variables for easier theming */
+  --primordial-background-primary: #121212;
+  --primordial-background-secondary: #1a1a1a;
+  --primordial-background-tertiary: #2a2a2a;
+  --primordial-background-quaternary: #3a3a3a;
+  --primordial-background-hover: #4a4a4a;
+  
+  --primordial-accent-primary: #00FFCC;
+  --primordial-accent-hover: #00E6B8;
+  --primordial-accent-muted: #00CC99;
+  
+  --primordial-border-primary: #374151;
+  --primordial-border-secondary: #4b5563;
+  
+  --primordial-text-primary: #ffffff;
+  --primordial-text-secondary: #d1d5db;
+  --primordial-text-tertiary: #9ca3af;
+  --primordial-text-muted: #6b7280;
+  
+  --primordial-status-success: #10b981;
+  --primordial-status-warning: #f59e0b;
+  --primordial-status-error: #ef4444;
+  --primordial-status-info: #3b82f6;
+  --primordial-status-pending: #6b7280;
+  --primordial-status-accepted: #10b981;
+  --primordial-status-declined: #ef4444;
+  
+  --primordial-card-background: #F5F5F5;
+  --primordial-card-text: #1f2937;
+  
+  /* Avatar colors */
+  --avatar-amber: #fbbf24;
+  --avatar-orange: #fb923c;
+  --avatar-rose: #fb7185;
+  --avatar-teal: #2dd4bf;
+  --avatar-blue: #60a5fa;
+  --avatar-purple: #a78bfa;
+  --avatar-green: #34d399;
+  --avatar-red: #f87171;
+  
+  /* Spacing tokens */
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  
+  /* Mobile-specific variables */
+  --mobile-header-height: 60px;
+  --mobile-bottom-nav-height: 80px;
+  --mobile-touch-target: 44px;
+  --mobile-sidebar-width: 100vw;
+  --desktop-sidebar-width: 320px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -73,6 +82,17 @@ body {
   font-family: var(--font-family-primordial);
 }
 
+/* Mobile-First Touch Optimizations */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Mobile-friendly button styles */
+.mobile-touch-target {
+  min-height: var(--mobile-touch-target);
+  min-width: var(--mobile-touch-target);
+}
+
 /* Hide scrollbars but keep scrolling functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
@@ -81,4 +101,188 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari, Opera */
+}
+
+/* Mobile-specific drag and drop styles */
+@media (max-width: 768px) {
+  .draggable-mobile {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .draggable-mobile:active {
+    opacity: 0.8;
+    transform: scale(1.05);
+    z-index: 1000;
+  }
+}
+
+/* Mobile sidebar styles */
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--primordial-background-tertiary);
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+.mobile-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.mobile-sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Mobile timeline optimizations */
+@media (max-width: 768px) {
+  .timeline-table {
+    font-size: 14px;
+  }
+  
+  .timeline-table td,
+  .timeline-table th {
+    padding: 12px 8px;
+  }
+  
+  .artist-avatar-mobile {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile header optimizations */
+@media (max-width: 768px) {
+  .mobile-header {
+    height: var(--mobile-header-height);
+    padding: 0 16px;
+  }
+  
+  .mobile-header h1 {
+    font-size: 18px;
+  }
+  
+  .mobile-header .desktop-only {
+    display: none;
+  }
+}
+
+/* Responsive grid for mobile dashboard */
+@media (max-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Mobile-friendly form inputs */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+    min-height: var(--mobile-touch-target);
+  }
+}
+
+/* Mobile button optimizations */
+@media (max-width: 768px) {
+  button {
+    min-height: var(--mobile-touch-target);
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .button-group-horizontal {
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Mobile-specific animations */
+@media (max-width: 768px) {
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.2s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Mobile safe area handling for devices with notches */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(var(--mobile-header-height), env(safe-area-inset-top));
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+/* iOS-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .ios-bounce-fix {
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .ios-momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
 }

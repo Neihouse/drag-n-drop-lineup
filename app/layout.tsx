@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LineupProvider } from './providers/LineupStore';
@@ -17,6 +17,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Primordial Groove - Lineup Planner",
   description: "Drag and drop artists onto a live timeline to create line-ups in seconds.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Lineup Planner"
+  }
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#00FFCC'
 };
 
 export default function RootLayout({
@@ -27,6 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Lineup Planner" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin="" />
         <link
           rel="stylesheet"
@@ -34,7 +51,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-primordial-background-primary min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-primordial-background-primary min-h-screen touch-manipulation`}
         style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
       >
         <LineupProvider>

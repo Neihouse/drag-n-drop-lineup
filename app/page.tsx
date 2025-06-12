@@ -10,30 +10,31 @@ export default function Home() {
     <div className="relative flex size-full min-h-screen flex-col bg-primordial-background-primary">
       <div className="layout-container flex h-full grow flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2b2f36] px-10 py-3">
-          <div className="flex items-center gap-4 text-white">
+        <header className="mobile-header flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2b2f36] px-4 md:px-10 py-3">
+          <div className="flex items-center gap-2 md:gap-4 text-white">
             <div className="size-4">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" clipRule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" />
               </svg>
             </div>
-            <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Primordial Groove</h2>
+            <h2 className="text-white text-base md:text-lg font-bold leading-tight tracking-[-0.015em]">Primordial Groove</h2>
           </div>
-          <div className="flex flex-1 justify-end gap-8">
-            <div className="flex items-center gap-9">
+          <div className="flex flex-1 justify-end gap-2 md:gap-8">
+            <div className="hidden md:flex items-center gap-9">
               <a className="text-white text-sm font-medium leading-normal" href="#">About</a>
             </div>
             <Link
               href="/events/create"
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primordial-accent-primary text-primordial-background-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
+              className="mobile-touch-target flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 md:h-10 px-3 md:px-4 bg-primordial-accent-primary text-primordial-background-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
             >
-              <span className="truncate">Create Event</span>
+              <span className="truncate hidden sm:inline">Create Event</span>
+              <span className="truncate sm:hidden">Create</span>
             </Link>
           </div>
         </header>
 
         {/* Main Content */}
-        <div className="px-40 flex flex-1 justify-center py-5">
+        <div className="px-4 md:px-8 lg:px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
             {/* Hero Section */}
             <div className="@container">
@@ -53,10 +54,10 @@ export default function Home() {
                     </h2>
                   </div>
                   
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
                     <Link
                       href="/events/create"
-                      className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-primordial-accent-primary text-primordial-background-primary text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
+                      className="mobile-touch-target flex min-w-[140px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 @[480px]:h-12 @[480px]:px-5 bg-primordial-accent-primary text-primordial-background-primary text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
                     >
                       <span className="truncate">Create Event</span>
                     </Link>
@@ -64,7 +65,7 @@ export default function Home() {
                     {state.events.length > 0 && (
                       <Link
                         href="/lineup"
-                        className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-transparent border-2 border-white text-white text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-white/10 transition-colors"
+                        className="mobile-touch-target flex min-w-[140px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 @[480px]:h-12 @[480px]:px-5 bg-transparent border-2 border-white text-white text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-white/10 transition-colors"
                       >
                         <span className="truncate">Go to Planner</span>
                       </Link>
@@ -131,7 +132,7 @@ export default function Home() {
 
             {/* Features Section */}
             <div className="p-4">
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="responsive-grid grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {/* Promoter Flow */}
                 <div className="bg-primordial-background-tertiary rounded-lg p-6">
                   <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">

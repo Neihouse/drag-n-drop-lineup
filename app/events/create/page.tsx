@@ -70,23 +70,23 @@ export default function CreateEvent() {
   return (
     <div className="min-h-screen bg-primordial-background-primary">
       {/* Header */}
-      <header className="bg-primordial-background-tertiary border-b border-gray-700 px-6 py-4">
+      <header className="mobile-header bg-primordial-background-tertiary border-b border-gray-700 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-400 hover:text-white">
+          <div className="flex items-center gap-2 md:gap-4">
+            <Link href="/" className="mobile-touch-target text-gray-400 hover:text-white p-2 -m-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </Link>
-            <h1 className="text-xl font-semibold text-white">Create New Event</h1>
+            <h1 className="text-lg md:text-xl font-semibold text-white">Create New Event</h1>
           </div>
           
           {/* Progress indicator */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             {[1, 2, 3].map(num => (
               <div
                 key={num}
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-colors ${
                   num === step
                     ? 'bg-blue-600 text-white'
                     : num < step
@@ -102,8 +102,8 @@ export default function CreateEvent() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-2xl mx-auto py-12 px-6">
-        <div className="bg-primordial-background-tertiary rounded-lg p-8">
+      <div className="max-w-2xl mx-auto py-6 md:py-12 px-4 md:px-6">
+        <div className="bg-primordial-background-tertiary rounded-lg p-4 md:p-8">
           
           {/* Step 1: Event Details */}
           {step === 1 && (
@@ -251,16 +251,16 @@ export default function CreateEvent() {
           )}
 
           {/* Navigation */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-600">
+          <div className="flex flex-col sm:flex-row justify-between mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-600 gap-3">
             <button
               onClick={prevStep}
               disabled={step === 1}
-              className="px-6 py-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="mobile-touch-target px-6 py-3 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors order-2 sm:order-1"
             >
               ← Previous
             </button>
             
-            <div className="flex gap-3">
+            <div className="flex gap-3 order-1 sm:order-2">
               {step < 3 ? (
                 <button
                   onClick={nextStep}
@@ -268,14 +268,14 @@ export default function CreateEvent() {
                     (step === 1 && (!formData.title || !formData.date)) ||
                     (step === 2 && formData.stages.some(stage => !stage.trim()))
                   }
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="mobile-touch-target flex-1 sm:flex-none px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Next →
                 </button>
               ) : (
                 <button
                   onClick={handlePublish}
-                  className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                  className="mobile-touch-target flex-1 sm:flex-none px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
                 >
                   🚀 Publish Event
                 </button>
