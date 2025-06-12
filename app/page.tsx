@@ -7,134 +7,211 @@ export default function Home() {
   const { state } = useLineup();
 
   return (
-    <div className="relative flex size-full min-h-screen flex-col bg-primordial-background-primary">
-      <div className="layout-container flex h-full grow flex-col">
-        {/* Header */}
-        <header className="mobile-header flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2b2f36] px-4 md:px-10 py-3">
-          <div className="flex items-center gap-2 md:gap-4 text-white">
-            <div className="size-4">
+    <div className="min-h-screen bg-primordial-background-primary text-white flex flex-col">
+      {/* Mobile-First Header */}
+      <header className="mobile-header">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" clipRule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" />
               </svg>
             </div>
-            <h2 className="text-white text-base md:text-lg font-bold leading-tight tracking-[-0.015em]">Primordial Groove</h2>
+            <h2 className="text-lg font-bold">Primordial Groove</h2>
           </div>
-          <div className="flex flex-1 justify-end gap-2 md:gap-8">
-            <div className="hidden md:flex items-center gap-9">
-              <a className="text-white text-sm font-medium leading-normal" href="#">About</a>
-            </div>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden min-[768px]:flex items-center gap-8">
+            <a className="text-white text-sm font-medium hover:text-primordial-accent-primary transition-colors" href="#about">About</a>
             <Link
               href="/events/create"
-              className="mobile-touch-target flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 md:h-10 px-3 md:px-4 bg-primordial-accent-primary text-primordial-background-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
+              className="btn bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary text-sm px-4 py-2"
             >
-              <span className="truncate hidden sm:inline">Create Event</span>
-              <span className="truncate sm:hidden">Create</span>
+              Create Event
             </Link>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Main Content */}
-        <div className="px-4 md:px-8 lg:px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
-            {/* Hero Section */}
-            <div className="@container">
-              <div className="@[480px]:p-4">
-                <div
-                  className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4"
-                  style={{
-                    backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCdQS1esuteZzHxoNgj_shxuAkA4YOrQBemcZ2lVRipgTS3ijIbl2-Vko6KnlAyFRTU6ZNat7wjrqcvTh9FKxbR4c4YBmHEZZNrpalx2q_s5FdLXsaOBTNYYbsjGIiaXyB0SC8E54_unLW-5BZPER1IqzsiJ1qBb0GnrFUzqNw0ts6r9Nqtk97ALc1PqLwT_L6PmEzgzm43pdofwcEbUNb5bAcFdYyEfvIEeu3pFs4LQMhtpIP5w-ZQicCUwTAM-0X9fD0wu5IXxlI")'
-                  }}
+      {/* Mobile-First Hero Section */}
+      <main className="flex-1 flex flex-col">
+        <div className="main-content">
+          {/* Hero */}
+          <div className="text-center py-8 space-y-6">
+            <div className="space-y-4">
+              <h1 className="text-2xl font-black leading-tight">
+                Line-Up Planner
+              </h1>
+              <p className="text-sm text-gray-300 max-w-md mx-auto">
+                Drag and drop artists onto a live timeline to create line-ups in seconds.
+              </p>
+            </div>
+            
+            {/* Mobile-First CTA Buttons */}
+            <div className="space-y-3">
+              <Link
+                href="/events/create"
+                className="btn w-full bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary font-bold"
+              >
+                Create Event
+              </Link>
+              
+              {state.events.length > 0 && (
+                <Link
+                  href="/lineup"
+                  className="btn w-full bg-transparent border-2 border-white text-white hover:bg-white/10 font-bold"
                 >
-                  <div className="flex flex-col gap-2 text-center">
-                    <h1 className="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]">
-                      Line-Up Planner
-                    </h1>
-                    <h2 className="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
-                      Drag and drop artists onto a live timeline to create line-ups in seconds.
-                    </h2>
-                  </div>
+                  Go to Planner
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Progressive Enhancement: Larger Hero for Desktop */}
+          <div className="hidden min-[768px]:block py-12">
+            <div className="text-center space-y-8">
+              <div
+                className="min-h-[400px] bg-cover bg-center bg-no-repeat rounded-xl flex items-center justify-center p-8"
+                style={{
+                  backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCdQS1esuteZzHxoNgj_shxuAkA4YOrQBemcZ2lVRipgTS3ijIbl2-Vko6KnlAyFRTU6ZNat7wjrqcvTh9FKxbR4c4YBmHEZZNrpalx2q_s5FdLXsaOBTNYYbsjGIiaXyB0SC8E54_unLW-5BZPER1IqzsiJ1qBb0GnrFUzqNw0ts6r9Nqtk97ALc1PqLwT_L6PmEzgzm43pdofwcEbUNb5bAcFdYyEfvIEeu3pFs4LQMhtpIP5w-ZQicCUwTAM-0X9fD0wu5IXxlI")'
+                }}
+              >
+                <div className="space-y-6 text-center">
+                  <h1 className="text-5xl font-black leading-tight">
+                    Line-Up Planner
+                  </h1>
+                  <p className="text-lg text-gray-200 max-w-lg mx-auto">
+                    Drag and drop artists onto a live timeline to create line-ups in seconds.
+                  </p>
                   
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                  <div className="flex gap-4 justify-center">
                     <Link
                       href="/events/create"
-                      className="mobile-touch-target flex min-w-[140px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 @[480px]:h-12 @[480px]:px-5 bg-primordial-accent-primary text-primordial-background-primary text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-primordial-accent-hover transition-colors"
+                      className="btn bg-primordial-accent-primary hover:bg-primordial-accent-hover text-primordial-background-primary text-lg px-6 py-3 font-bold"
                     >
-                      <span className="truncate">Create Event</span>
+                      Create Event
                     </Link>
                     
                     {state.events.length > 0 && (
                       <Link
                         href="/lineup"
-                        className="mobile-touch-target flex min-w-[140px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 @[480px]:h-12 @[480px]:px-5 bg-transparent border-2 border-white text-white text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-white/10 transition-colors"
+                        className="btn bg-transparent border-2 border-white text-white hover:bg-white/10 text-lg px-6 py-3 font-bold"
                       >
-                        <span className="truncate">Go to Planner</span>
+                        Go to Planner
                       </Link>
                     )}
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Events Dashboard */}
-            {state.events.length > 0 && (
-              <div className="p-4">
-                <div className="bg-primordial-background-tertiary rounded-xl p-6">
-                  <h3 className="text-2xl font-bold text-white mb-6">Your Events</h3>
-                  
-                  <div className="grid gap-4">
-                    {state.events.map(event => {
-                      const eventSlots = state.slots.filter(slot => slot.eventId === event.id);
-                      const totalArtists = new Set(eventSlots.map(slot => slot.artistId)).size;
-                      
-                      return (
-                        <div key={event.id} className="bg-primordial-background-quaternary rounded-lg p-4 hover:bg-primordial-background-hover transition-colors">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-white text-lg">{event.title}</h4>
-                              <p className="text-gray-400">{event.date}</p>
-                              <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                                <span>{event.stages.length} stages</span>
-                                <span>•</span>
-                                <span>{totalArtists} artists scheduled</span>
-                                <span>•</span>
-                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                  event.status === 'published' 
-                                    ? 'bg-green-600/20 text-green-300' 
-                                    : 'bg-yellow-600/20 text-yellow-300'
-                                }`}>
-                                  {event.status}
-                                </span>
-                              </div>
-                            </div>
-                            
-                            <div className="flex gap-2">
-                              <Link
-                                href={`/lineup?event=${event.id}`}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
-                              >
-                                Edit Lineup
-                              </Link>
-                              <Link
-                                href={`/public/${event.id}`}
-                                className="px-4 py-2 bg-primordial-background-quaternary hover:bg-primordial-background-hover text-white rounded-lg text-sm font-medium transition-colors"
-                              >
-                                Public View
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+          {/* Events Dashboard - Mobile First */}
+          {state.events.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold">Your Events</h2>
+              <div className="space-y-3">
+                {state.events.map(event => (
+                  <Link 
+                    key={event.id}
+                    href="/lineup"
+                    className="card p-4 block hover:bg-primordial-background-hover transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-white truncate">{event.title}</h3>
+                        <p className="text-sm text-gray-400">{event.date}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`inline-block w-3 h-3 rounded-full ${
+                          event.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'
+                        }`}></span>
+                        {event.locked && (
+                          <div className="text-xs text-red-400 mt-1">🔒 Locked</div>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Features Section - Mobile First */}
+          <div className="space-y-6 mt-8">
+            <h2 className="text-xl font-bold text-center">For Every Role</h2>
+            
+            {/* Mobile: Stacked cards */}
+            <div className="space-y-4">
+              {/* Promoter Card */}
+              <div className="card p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-white mb-2">For Promoters</h3>
+                    <p className="text-gray-400 text-sm mb-4">Create events, set up stages, and hand off to your booking team.</p>
+                    <Link
+                      href="/events/create"
+                      className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                    >
+                      Create Event →
+                    </Link>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Features Section */}
-            <div className="p-4">
-              <div className="responsive-grid grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {/* Booker Card */}
+              <div className="card p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-white mb-2">For Bookers</h3>
+                    <p className="text-gray-400 text-sm mb-4">Build lineups with drag-and-drop ease, manage conflicts.</p>
+                    <Link
+                      href="/lineup"
+                      className="text-green-400 hover:text-green-300 text-sm font-medium"
+                    >
+                      Build Lineup →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Artist Card */}
+              <div className="card p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-white mb-2">For Artists</h3>
+                    <p className="text-gray-400 text-sm mb-4">View your slots, accept or decline bookings.</p>
+                    <Link
+                      href="/artist"
+                      className="text-purple-400 hover:text-purple-300 text-sm font-medium"
+                    >
+                      Artist Dashboard →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progressive Enhancement: Desktop Grid */}
+            <div className="hidden min-[768px]:block">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Promoter Flow */}
-                <div className="bg-primordial-background-tertiary rounded-lg p-6">
+                <div className="card p-6">
                   <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
@@ -151,14 +228,14 @@ export default function Home() {
                 </div>
 
                 {/* Booker Flow */}
-                <div className="bg-primordial-background-tertiary rounded-lg p-6">
+                <div className="card p-6">
                   <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-2">For Bookers</h3>
-                  <p className="text-gray-400 text-sm mb-4">Drag artists to timeline, manage conflicts, export schedules.</p>
+                  <p className="text-gray-400 text-sm mb-4">Build lineups with drag-and-drop ease, manage conflicts.</p>
                   <Link
                     href="/lineup"
                     className="text-green-400 hover:text-green-300 text-sm font-medium"
@@ -168,7 +245,7 @@ export default function Home() {
                 </div>
 
                 {/* Artist Flow */}
-                <div className="bg-primordial-background-tertiary rounded-lg p-6">
+                <div className="card p-6">
                   <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -187,7 +264,42 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* Mobile Bottom Navigation (if no events) */}
+      {state.events.length === 0 && (
+        <nav className="mobile-nav">
+          <Link
+            href="/events/create"
+            className="flex flex-col items-center gap-1 p-2 text-primordial-accent-primary"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            <span className="text-xs">Create</span>
+          </Link>
+          
+          <a 
+            href="#about"
+            className="flex flex-col items-center gap-1 p-2 text-gray-400"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-xs">About</span>
+          </a>
+          
+          <Link
+            href="/artist"
+            className="flex flex-col items-center gap-1 p-2 text-gray-400"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="text-xs">Artists</span>
+          </Link>
+        </nav>
+      )}
     </div>
   );
 }

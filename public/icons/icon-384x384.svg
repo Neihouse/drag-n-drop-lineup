@@ -1,0 +1,12 @@
+<svg width="384" height="384" viewBox="0 0 384 384" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FFCC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0099FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="384" height="384" rx="61.44" fill="#0C0C0D"/>
+  <circle cx="192" cy="192" r="119.03999999999999" fill="url(#gradient)" opacity="0.8"/>
+  <path d="M192 111.35999999999999 L272.64 192 L192 272.64 L111.35999999999999 192 Z" fill="#FFFFFF" opacity="0.9"/>
+  <text x="192" y="299.52" text-anchor="middle" fill="#00FFCC" font-family="Arial, sans-serif" font-size="31.872" font-weight="bold">LINEUP</text>
+</svg>

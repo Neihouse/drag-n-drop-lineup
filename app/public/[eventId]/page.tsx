@@ -133,7 +133,7 @@ function TimelineGrid({ event, slots, artists }: TimelineGridProps) {
   );
 }
 
-function MobileTimelineList({ event, slots, artists }: TimelineGridProps) {
+function MobileTimelineList({ slots, artists }: Omit<TimelineGridProps, 'event'>) {
   const eventSlots = slots
     .map(slot => ({
       ...slot,
@@ -289,7 +289,7 @@ export default function PublicTimetable() {
 
         {/* Mobile Timeline List */}
         <div className="lg:hidden">
-          <MobileTimelineList event={event} slots={eventSlots} artists={eventArtists} />
+          <MobileTimelineList slots={eventSlots} artists={eventArtists} />
         </div>
 
         {/* Artist Count */}

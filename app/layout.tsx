@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LineupProvider } from './providers/LineupStore';
 import { InternalSeedPrimer } from './components/InternalSeedPrimer';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,9 +47,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Lineup Planner" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="32x32" href="/icons/icon-32x32.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="16x16" href="/icons/icon-16x16.svg" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossOrigin="" />
         <link
           rel="stylesheet"
@@ -59,10 +61,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-primordial-background-primary min-h-screen touch-manipulation`}
         style={{ fontFamily: '"Space Grotesk", "Noto Sans", sans-serif' }}
       >
-        <LineupProvider>
-          <InternalSeedPrimer />
-          {children}
-        </LineupProvider>
+        <ErrorBoundary>
+          <LineupProvider>
+            <InternalSeedPrimer />
+            {children}
+          </LineupProvider>
+        </ErrorBoundary>
         
         {/* PWA Service Worker Registration */}
         <script

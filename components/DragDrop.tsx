@@ -43,7 +43,7 @@ interface DroppableProps {
   id: string;
   children: ReactNode;
   className?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 export function Droppable({ id, children, className, data }: DroppableProps) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLineup } from '@/app/providers/LineupStore';
 import type { LineupSlot, Artist, Event } from '@/app/providers/LineupStore';
 import { CURRENT_ARTIST_ID } from '@/seed/internalSeed';

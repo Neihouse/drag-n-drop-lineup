@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "production-setup": "node production-setup.js",
+    "build:analyze": "ANALYZE=true npm run build",
+    "check": "npm run lint && npm run build",
+    "preview": "npm run build && npm run start"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -31,6 +35,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "9.28.0",
+    "eslint-config-next": "15.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

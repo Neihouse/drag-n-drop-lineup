@@ -6,8 +6,9 @@ const urlsToCache = [
   '/events/create',
   '/manifest.json',
   // Add your static assets here
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/icons/icon-192x192.svg',
+  '/icons/icon-512x512.svg',
+  '/favicon.svg',
 ];
 
 // Install event - cache static assets
@@ -95,8 +96,8 @@ function doBackgroundSync() {
 self.addEventListener('push', function(event) {
   const options = {
     body: event.data ? event.data.text() : 'New lineup update available!',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: '/icons/icon-192x192.svg',
+    badge: '/icons/icon-72x72.svg',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -106,12 +107,12 @@ self.addEventListener('push', function(event) {
       {
         action: 'explore',
         title: 'View Lineup',
-        icon: '/icons/icon-192x192.png'
+        icon: '/icons/icon-192x192.svg'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/icons/icon-192x192.png'
+        icon: '/icons/icon-192x192.svg'
       }
     ]
   };
